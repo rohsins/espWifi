@@ -15,4 +15,7 @@ class Wifi {
         Wifi();
         void Init();
         void Init(wifi_config_t WifiConfig, wifi_init_config_t InitConfig, esp_err_t (*handler)(void *ctx, system_event_t *event));
+        void Connect();
+        void Disconnect();
+        ~Wifi();
 };

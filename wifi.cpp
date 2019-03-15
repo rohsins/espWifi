@@ -8,6 +8,8 @@
 EventGroupHandle_t wifi_event_group;
 constexpr char* TAGWIFI = "WifiTAG";
 const int CONNECTED_BIT = BIT0;
+static volatile bool ready = false;
+static volatile bool connecting = false;
 
 esp_err_t wifi_event_handler(void *ctx, system_event_t *event) {
     switch (event->event_id) {
@@ -44,9 +46,9 @@ void Wifi::Init() {
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config);
-    esp_wifi_start();
-    ESP_LOGI(TAGWIFI, "Waiting for wifi");
-    xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
+    // esp_wifi_start();
+    // ESP_LOGI(TAGWIFI, "Waiting for wifi");
+    // xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
 }
 
 void Wifi::Init(wifi_config_t WifiConfig, wifi_init_config_t InitConfig, esp_err_t (*handler)(void *ctx, system_event_t *event)) {
@@ -55,7 +57,22 @@ void Wifi::Init(wifi_config_t WifiConfig, wifi_init_config_t InitConfig, esp_err
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_set_config(ESP_IF_WIFI_STA, &WifiConfig);
+    // esp_wifi_start();
+    // ESP_LOGI(TAGWIFI, "Waiting for wifi");
+    // xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
+}
+
+void Wifi::Connect() {
+    ESP_LOGI(TAGWIFI, "Connecting Wifi ...");
     esp_wifi_start();
-    ESP_LOGI(TAGWIFI, "Waiting for wifi");
     xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
+}
+
+void Wifi::Disconnect() {
+    ESP_LOGI(TAGWIFI, "Disconnecting Wifi ...");
+    esp_wifi_stop();
+}
+
+Wifi::~Wifi() {
+    // esp_wifi_stop();
 }
